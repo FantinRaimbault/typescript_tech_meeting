@@ -44,7 +44,11 @@ type ExtractControllerMethods<ObjController> = ObjController extends {
   methods: object;
 }
   ? {
-      // TODO
+      [Key in keyof ObjController['methods']]: ObjController['methods'][Key] extends (
+        ...args: infer Args
+      ) => infer Return
+        ? (...args: Args) => Return
+        : never;
     }
   : never;
 
@@ -67,7 +71,15 @@ type ExtractControllerMethods<ObjController> = ObjController extends {
  * //   };
  * // }
  */
-type Trpc<Controllers extends Array<any>> = {};
+type Trpc<Controllers extends Array<any>> = {
+  [Controller in Controllers[number] as Controller extends {
+    controllerName: infer Name;
+  }
+    ? Name extends string
+      ? Name
+      : never
+    : never]: ExtractControllerMethods<Controller>;
+};
 
 function trpc<Controllers extends Array<any>>(
   controllers: Controllers,

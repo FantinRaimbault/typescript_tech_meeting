@@ -46,7 +46,31 @@ type PopulateResult<
   Virtual,
   PopulateOption extends AppPopulateOption<Virtual>, // = [{path: string, populate: [{path, populate: ...Recursive... }]}]
 > = Model & {
-  
+  [Opt in PopulateOption[number] as Opt['path']]: Opt['path'] extends keyof Virtual
+    ? // check if field *team* is an array and extract the type Team thx to infer keyword
+      Virtual[Opt['path']] extends Array<infer TypeOfTheArray>
+      ? // Then we check if we have a populate option field
+        Opt['populate'] extends Array<any>
+        ? // If yes, we call recursively PopulateResult with the type of the array and the populate option
+          TypeOfTheArray &
+            PopulateResult<
+              TypeOfTheArray,
+              VirtualsGetter<TypeOfTheArray>,
+              Opt['populate']
+            >
+        : // If no, we return the type of the array with [], note: we could use Virtual[Opt['path']] instead of TypeOfTheArray[]
+          TypeOfTheArray[]
+      : // If *team* is not an array, we check if we have a populate option field and call recursively PopulateResult (same as above)
+        Opt['populate'] extends Array<any>
+        ? Virtual[Opt['path']] &
+            PopulateResult<
+              Virtual[Opt['path']],
+              VirtualsGetter<Virtual[Opt['path']]>,
+              Opt['populate']
+            >
+        : // If no, we return the type of the field
+          Virtual[Opt['path']]
+    : never;
 };
 
 type Result = PopulateResult<
