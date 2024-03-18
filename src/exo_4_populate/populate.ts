@@ -86,7 +86,7 @@ type Result = PopulateResult<
       ];
     },
     {
-        path: 'dogs'
-    }
+      path: 'dogs';
+    },
   ]
 >;

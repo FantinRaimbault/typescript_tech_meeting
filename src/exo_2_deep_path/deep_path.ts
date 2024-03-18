@@ -27,16 +27,16 @@ type DeepPath<MyObject> = MyObject extends object
  * // Result = string
  */
 type GetValueFromPath<MyObj, Str, Sep> = Str extends string
-? Sep extends string
-  ? Str extends `${infer BS}${Sep}${infer Rest}`
-    ? BS extends keyof MyObj
-      ? GetValueFromPath<MyObj[BS], Rest, Sep>
-      : never
-    : Str extends keyof MyObj
-      ? MyObj[Str]
-      : never
-  : never
-: never;
+  ? Sep extends string
+    ? Str extends `${infer BS}${Sep}${infer Rest}`
+      ? BS extends keyof MyObj
+        ? GetValueFromPath<MyObj[BS], Rest, Sep>
+        : never
+      : Str extends keyof MyObj
+        ? MyObj[Str]
+        : never
+    : never
+  : never;
 
 const obj = {
   a: {
@@ -56,17 +56,20 @@ const obj = {
 
 /**
  * Exo 2 - C : getValueFromPath function
- * instruction: Use your types to create a function 
+ * instruction: Use your types to create a function
  * getValueFromPath that takes an object and a path and returns the value at this path
  * tips: use Generics getValueFromPath<...>
  */
-function getValueFromPath<Obj, Path extends DeepPath<Obj>>(obj: Obj, path: Path) {
-    const paths = path.split('.');
-    let objTemp = { ...obj };
-    for (const p of paths) {
-      objTemp = objTemp[p];
-    }
-    return objTemp as GetValueFromPath<Obj, Path, '.'>;
+function getValueFromPath<Obj, Path extends DeepPath<Obj>>(
+  obj: Obj,
+  path: Path,
+) {
+  const paths = path.split('.');
+  let objTemp = { ...obj };
+  for (const p of paths) {
+    objTemp = objTemp[p];
   }
+  return objTemp as GetValueFromPath<Obj, Path, '.'>;
+}
 
 const value = getValueFromPath(obj, 'a.b.z.y');
