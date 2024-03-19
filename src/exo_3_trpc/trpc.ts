@@ -51,7 +51,7 @@ type ExtractControllerMethods<ObjController> = ObjController extends {
 /**
  * Exo 3 - B : trpc
  * instruction: Create a type Trpc that takes a generic Controllers
- * and returns a new type where all the methods of Controllers are extracted
+ * and returns a new type where all the methods of Controllers are contained in a single object with the controllerName as key
  * Example:
  * type Result = Trpc<[typeof blogController, typeof postController]>
  * // Result = {
